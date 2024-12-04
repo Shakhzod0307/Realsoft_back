@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
             TeamSeeder::class,
             PartnerSeeder::class,
             ProjectSeeder::class,
-            ImageSeeder::class
+            ImageSeeder::class,
+            ContactSeeder::class,
         ]);
         // User::factory(10)->create();
 

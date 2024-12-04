@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AdvantageController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\PartnerController;
@@ -20,5 +21,6 @@ Route::get('/get-teams',[TeamController::class,'teams']);
 Route::get('/get-partners',[PartnerController::class,'partner']);
 Route::get('/get-projects',[ProjectController::class,'projects']);
 Route::get('/get-images',[ImageController::class,'getImages']);
+Route::get('/get-contact',[ContactController::class,'index']);
 Route::post('/post-form',[FormController::class,'postForm']);
 
