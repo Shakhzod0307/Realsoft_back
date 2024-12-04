@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PartnerController;
 use App\Http\Controllers\Api\SectorController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\StatisticController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Support\Facades\Route;
@@ -22,5 +23,6 @@ Route::get('/get-partners',[PartnerController::class,'partner']);
 Route::get('/get-projects',[ProjectController::class,'projects']);
 Route::get('/get-images',[ImageController::class,'getImages']);
 Route::get('/get-contact',[ContactController::class,'index']);
+Route::get('/get-statistics',[StatisticController::class,'index']);
 Route::post('/post-form',[FormController::class,'postForm']);
 
