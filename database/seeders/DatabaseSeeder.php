@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ImageSeeder::class,
             ContactSeeder::class,
             StatisticSeeder::class,
+            TextSeeder::class,
         ]);
         // User::factory(10)->create();
 

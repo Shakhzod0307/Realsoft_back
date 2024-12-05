@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\StatisticController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\TextController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/get-services',[ServiceController::class,'services']);
@@ -24,5 +25,6 @@ Route::get('/get-projects',[ProjectController::class,'projects']);
 Route::get('/get-images',[ImageController::class,'getImages']);
 Route::get('/get-contact',[ContactController::class,'index']);
 Route::get('/get-statistics',[StatisticController::class,'index']);
+Route::get('/get-texts',[TextController::class,'index']);
 Route::post('/post-form',[FormController::class,'postForm']);
 
