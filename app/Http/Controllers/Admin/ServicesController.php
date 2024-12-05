@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 class ServicesController extends Controller
 {
 
-
     public function service(Request $request)
     {
         try {

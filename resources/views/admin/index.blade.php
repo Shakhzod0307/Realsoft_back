@@ -101,6 +101,20 @@
                     <a href="{{route('admin-partners-dashboard')}}" class="block px-2 py-1 hover:bg-gray-100">Partners</a>
                 </button>
             </div>
+            {{-- Statistic--}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="flex items-center space-x-1 w-full rounded-md px-2 py-3 hover:bg-gray-100 hover:text-blue-600">
+                    <span class="text-2xl"><i class="fa-solid fa-chart-line"></i></span>
+                    <a href="{{route('admin-statistics-dashboard')}}" class="block px-2 py-1 hover:bg-gray-100">Statistics</a>
+                </button>
+            </div>
+            {{-- About--}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="flex items-center space-x-1 w-full rounded-md px-2 py-3 hover:bg-gray-100 hover:text-blue-600">
+                    <span class="text-2xl"><i class="fa-solid fa-file-alt"></i></span>
+                    <a href="{{route('admin-about-dashboard')}}" class="block px-2 py-1 hover:bg-gray-100">About</a>
+                </button>
+            </div>
         </aside>
         <div id="app" class="w-full">
             @yield('content')

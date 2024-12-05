@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdvantageController;
 use App\Http\Controllers\Admin\AuthController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin\FormController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\SectorController;
 use App\Http\Controllers\Admin\ServicesController;
+use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\Admin\TeamController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +49,16 @@ Route::middleware('auth')->group(function () {
     Route::post('partner',[PartnerController::class,'partnerCreate'])->name('admin-partner-store');
     Route::delete('partner/{id}',[PartnerController::class,'partnerDelete'])->name('admin-partner-delete');
     Route::post('partner/{id}',[PartnerController::class,'partnerUpdate'])->name('admin-partner-update');
+    //statistics
+    Route::get('admin-statistics-dashboard', [StatisticController::class, 'dashboard'])->name('admin-statistics-dashboard');
+    Route::post('statistic',[StatisticController::class,'statisticCreate'])->name('admin-statistic-store');
+    Route::delete('statistic/{id}',[StatisticController::class,'statisticDelete'])->name('admin-statistic-delete');
+    Route::post('statistic/{id}',[StatisticController::class,'statisticUpdate'])->name('admin-statistic-update');
+    //about
+    Route::get('admin-about-dashboard', [AboutController::class, 'dashboard'])->name('admin-about-dashboard');
+    Route::post('about',[AboutController::class,'aboutCreate'])->name('admin-about-store');
+    Route::delete('about/{id}',[AboutController::class,'aboutDelete'])->name('admin-about-delete');
+    Route::post('about/{id}',[AboutController::class,'aboutUpdate'])->name('admin-about-update');
 });
 
 
