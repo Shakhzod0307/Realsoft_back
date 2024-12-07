@@ -115,6 +115,13 @@
                     <a href="{{route('admin-about-dashboard')}}" class="block px-2 py-1 hover:bg-gray-100">About</a>
                 </button>
             </div>
+            {{-- Ima--}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="flex items-center space-x-1 w-full rounded-md px-2 py-3 hover:bg-gray-100 hover:text-blue-600">
+                    <span class="text-2xl"><i class="fa-solid fa-images"></i></span>
+                    <a href="{{route('admin-images-dashboard')}}" class="block px-2 py-1 hover:bg-gray-100">Images</a>
+                </button>
+            </div>
         </aside>
         <div id="app" class="w-full">
             @yield('content')

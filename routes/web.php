@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdvantageController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BlogsController;
 use App\Http\Controllers\Admin\FormController;
+use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\SectorController;
 use App\Http\Controllers\Admin\ServicesController;
@@ -59,6 +60,11 @@ Route::middleware('auth')->group(function () {
     Route::post('about',[AboutController::class,'aboutCreate'])->name('admin-about-store');
     Route::delete('about/{id}',[AboutController::class,'aboutDelete'])->name('admin-about-delete');
     Route::post('about/{id}',[AboutController::class,'aboutUpdate'])->name('admin-about-update');
+    //images
+    Route::get('admin-images-dashboard', [ImageController::class, 'dashboard'])->name('admin-images-dashboard');
+    Route::post('image',[ImageController::class,'imageCreate'])->name('admin-image-store');
+    Route::delete('image/{id}',[ImageController::class,'imageDelete'])->name('admin-image-delete');
+    Route::post('image/{id}',[ImageController::class,'imageUpdate'])->name('admin-image-update');
 });
 
 

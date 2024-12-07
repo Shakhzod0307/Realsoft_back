@@ -14,23 +14,23 @@ class ImageSeeder extends Seeder
     public function run(): void
     {
         Image::create([
-            'name'=>'/images/homepage-circle.svg',
+            'image'=>'/images/homepage-circle.svg',
             'type'=>'hero'
         ]);
         Image::create([
-            'name'=>'/images/main-mini-circle.svg',
+            'image'=>'/images/main-mini-circle.svg',
             'type'=>'hero'
         ]);
         Image::create([
-            'name'=>'/images/kompaniya-realsoft.svg',
+            'image'=>'/images/kompaniya-realsoft.svg',
             'type'=>'company'
         ]);
         Image::create([
-            'name'=>'/images/sngr-statistics-banner.png',
+            'image'=>'/images/sngr-statistics-banner.png',
             'type'=>'statistic'
         ]);
         Image::create([
-            'name'=>'/images/zayavku.png',
+            'image'=>'/images/zayavku.png',
             'type'=>'form'
         ]);
     }
