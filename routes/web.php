@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SectorController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\TextController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/admin/login',[AuthController::class,'login'])->name('login');
@@ -65,6 +66,11 @@ Route::middleware('auth')->group(function () {
     Route::post('image',[ImageController::class,'imageCreate'])->name('admin-image-store');
     Route::delete('image/{id}',[ImageController::class,'imageDelete'])->name('admin-image-delete');
     Route::post('image/{id}',[ImageController::class,'imageUpdate'])->name('admin-image-update');
+    //texts
+    Route::get('admin-texts-dashboard', [TextController::class, 'dashboard'])->name('admin-texts-dashboard');
+    Route::post('text',[TextController::class,'textCreate'])->name('admin-text-store');
+    Route::delete('text/{id}',[TextController::class,'textDelete'])->name('admin-text-delete');
+    Route::post('text/{id}',[TextController::class,'textUpdate'])->name('admin-text-update');
 });
 
 
