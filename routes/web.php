@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\SectorController;
 use App\Http\Controllers\Admin\ServicesController;
+use App\Http\Controllers\Admin\SocialMediaController;
 use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TextController;
@@ -61,6 +62,10 @@ Route::middleware('auth')->group(function () {
     Route::post('about',[AboutController::class,'aboutCreate'])->name('admin-about-store');
     Route::delete('about/{id}',[AboutController::class,'aboutDelete'])->name('admin-about-delete');
     Route::post('about/{id}',[AboutController::class,'aboutUpdate'])->name('admin-about-update');
+    //social-media
+    Route::post('social-media',[SocialMediaController::class,'socialMediaCreate'])->name('admin-social-media-store');
+    Route::delete('social-media/{id}',[SocialMediaController::class,'socialMediaDelete'])->name('admin-social-media-delete');
+    Route::post('social-media/{id}',[SocialMediaController::class,'socialMediaUpdate'])->name('admin-social-media-update');
     //images
     Route::get('admin-images-dashboard', [ImageController::class, 'dashboard'])->name('admin-images-dashboard');
     Route::post('image',[ImageController::class,'imageCreate'])->name('admin-image-store');

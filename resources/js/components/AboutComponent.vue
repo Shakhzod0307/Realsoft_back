@@ -1,15 +1,14 @@
-
 <template>
     <div class="app-container">
         <div class="content">
+            <!-- About Section -->
             <div class="header">
-                <h2>About Dashboard</h2>
-                <button @click="openAddModal" class="create-service">
+                <h2>About</h2>
+                <button @click="openAddModal('about')" class="create-service">
                     <i class="fa fa-plus"></i>
                 </button>
             </div>
 
-            <!-- Table -->
             <div class="table-container">
                 <table class="services-table">
                     <thead>
@@ -23,15 +22,55 @@
                     </thead>
                     <tbody>
                     <tr v-for="(service, index) in Service" :key="service.id">
-                        <td style="padding: 30px">{{ index + 1 }}</td>
-                        <td style="padding: 30px">{{ service.phone }}</td>
-                        <td style="padding: 30px">{{ service.email }}</td>
-                        <td style="padding: 30px">{{ service.address }}</td>
-                        <td style="padding: 30px; gap: 30px" class="action-buttons">
-                            <button @click="openEditModal(service)" class="btn edit-btn">
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ service.phone }}</td>
+                        <td>{{ service.email }}</td>
+                        <td>{{ service.address }}</td>
+                        <td class="action-buttons">
+                            <button @click="openEditModal(service, 'about')" class="btn edit-btn">
                                 <i class="fa fa-edit"></i>
                             </button>
-                            <button @click="openDeleteModal(service.id)" class="btn delete-btn">
+                            <button @click="openDeleteModal(service.id, 'about')" class="btn delete-btn">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Social Media Section -->
+            <div class="header">
+                <h2>Social Media</h2>
+                <button @click="openAddModal('socialMedia')" class="create-service">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="services-table">
+                    <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Icon</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Url</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(social, index) in SocialMedia" :key="social.id">
+                        <td>{{ index + 1 }}</td>
+                        <td class="table-icon"><i :class="social.class"></i></td>
+                        <td>{{ social.name }}</td>
+                        <td class="media-class">{{ social.class }}</td>
+                        <td>{{ social.url }}</td>
+                        <td class="action-buttons">
+                            <button @click="openEditModal(social, 'socialMedia')" class="btn edit-btn">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button @click="openDeleteModal(social.id, 'socialMedia')" class="btn delete-btn">
                                 <i class="fa fa-trash"></i>
                             </button>
                         </td>
@@ -47,11 +86,19 @@
                 <div class="modal-content">
                     <h3>{{ modalTitle }}</h3>
                     <form @submit.prevent="submitForm" class="modal-form">
-                        <input v-model="form.phone" placeholder="Phone" class="modal-input" required />
-                        <input v-model="form.email" placeholder="Email" class="modal-input" required />
-                        <textarea rows="4" v-model="form.address" placeholder="Address" class="modal-input" required />
+                        <!-- Form Fields for Both Sections -->
+                        <template v-if="currentSection === 'about'">
+                            <input  v-model="form.phone" placeholder="Phone" class="modal-input" required />
+                            <input  v-model="form.email" placeholder="Email" class="modal-input" required />
+                            <textarea v-model="form.address" placeholder="Address" rows="4" class="modal-input" required></textarea>
+                        </template>
+                        <template v-else-if="currentSection === 'socialMedia'">
+                            <input v-model="form.name" placeholder="Name" class="modal-input" required />
+                            <input v-model="form.class" placeholder="Class" class="modal-input" required />
+                            <input v-model="form.url" placeholder="Url" class="modal-input" required />
+                        </template>
                         <div class="modal-buttons">
-                            <button @click="closeModal" type="button" class="btn cancel-btn">Cancel</button>
+                            <button type="button" @click="closeModal" class="btn cancel-btn">Cancel</button>
                             <button type="submit" class="btn submit-btn">Save</button>
                         </div>
                     </form>
@@ -64,7 +111,7 @@
             <div v-if="showDeleteModal" class="modal-overlay">
                 <div class="modal-content">
                     <h3>Confirm Deletion</h3>
-                    <p>Are you sure you want to delete?</p>
+                    <p>Are you sure you want to delete this item?</p>
                     <div class="modal-buttons">
                         <button @click="closeDeleteModal" class="btn cancel-btn">Cancel</button>
                         <button @click="confirmDelete" class="btn delete-btn">Delete</button>
@@ -76,35 +123,41 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 
 const Service = ref([]);
+const SocialMedia = ref([]);
 const showModal = ref(false);
 const showDeleteModal = ref(false);
-const modalTitle = ref('');
-const form = ref({ id: null, phone: '', email: '', address: ''});
-const serviceIdToDelete = ref(null);
+const modalTitle = ref("");
+const currentSection = ref("");
+const form = ref({});
+const itemIdToDelete = ref(null);
 
-const GetAllServices = async () => {
+const fetchData = async (endpoint, target) => {
     try {
-        const response = await axios.get('/api/get-contact');
-        Service.value = response.data.data;
+        const response = await axios.get(endpoint);
+        target.value = response.data.data;
     } catch (error) {
-        console.error("Failed to fetch services:", error);
+        console.error("Failed to fetch data:", error);
     }
 };
 
+const GetAllServices = () => fetchData("/api/get-contact", Service);
+const GetSocialMedia = () => fetchData("/api/get-social-media", SocialMedia);
 
-const openAddModal = () => {
-    modalTitle.value = 'Add New Contact Info';
-    form.value = { id: null, phone: '', email: '',address:''};
+const openAddModal = (section) => {
+    currentSection.value = section;
+    modalTitle.value = section === "about" ? "Add New Contact Info" : "Add New Social Media";
+    form.value = {};
     showModal.value = true;
 };
 
-const openEditModal = (client) => {
-    modalTitle.value = 'Edit Contact';
-    form.value = { ...client };
+const openEditModal = (item, section) => {
+    currentSection.value = section;
+    modalTitle.value = section === "about" ? "Edit Contact Info" : "Edit Social Media";
+    form.value = { ...item };
     showModal.value = true;
 };
 
@@ -112,20 +165,22 @@ const closeModal = () => (showModal.value = false);
 
 const submitForm = async () => {
     try {
+        const endpoint = currentSection.value === "about" ? "/about" : "/social-media";
         if (form.value.id) {
-            await axios.post(`/about/${form.value.id}`, form.value);
+            await axios.post(`${endpoint}/${form.value.id}`, form.value);
         } else {
-            await axios.post('/about', form.value);
+            await axios.post(endpoint, form.value);
         }
         closeModal();
-        await GetAllServices();
+        currentSection.value === "about" ? await GetAllServices() : await GetSocialMedia();
     } catch (error) {
-        console.error("Failed to save about:", error);
+        console.error("Failed to save data:", error);
     }
 };
 
-const openDeleteModal = (id) => {
-    serviceIdToDelete.value = id;
+const openDeleteModal = (id, section) => {
+    currentSection.value = section;
+    itemIdToDelete.value = id;
     showDeleteModal.value = true;
 };
 
@@ -133,18 +188,20 @@ const closeDeleteModal = () => (showDeleteModal.value = false);
 
 const confirmDelete = async () => {
     try {
-        await axios.delete(`/about/${serviceIdToDelete.value}`);
+        const endpoint = currentSection.value === "about" ? "/about" : "/social-media";
+        await axios.delete(`${endpoint}/${itemIdToDelete.value}`);
         closeDeleteModal();
-        await GetAllServices();
+        currentSection.value === "about" ? await GetAllServices() : await GetSocialMedia();
     } catch (error) {
-        console.error("Failed to delete about:", error);
+        console.error("Failed to delete data:", error);
     }
 };
 
-onMounted(() => GetAllServices());
-
+onMounted(() => {
+    GetAllServices();
+    GetSocialMedia();
+});
 </script>
-
 
 
 <style scoped>
@@ -208,21 +265,29 @@ input:focus, textarea:focus {
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 10px;
+    margin-bottom: 20px;
 }
 .services-table {
     width: 100%;
     border-collapse: collapse;
 }
+.media-class{
+    color: green;
+}
+.table-icon i{
+    font-size: 24px;
+    color: #4060d3;
+}
 .services-table th, .services-table td {
     padding: 12px 15px;
     text-align: left;
     font-size: 1rem;
-    color: #555;
 }
 .services-table th {
     background-color: #f0f0f0;
     font-weight: bold;
 }
+
 .services-table tbody tr:nth-child(even) {
     background-color: #f9f9f9;
 }
@@ -251,6 +316,7 @@ input:focus, textarea:focus {
 .delete-btn:hover {
     background-color: #c0392b;
 }
+
 
 /* Modals */
 .modal-overlay {
