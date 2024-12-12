@@ -16,6 +16,9 @@
     },
     "dependencies": {
         "@vitejs/plugin-vue": "^5.1.5",
-        "vue": "^3.5.12"
+        "dropzone": "^6.0.0-beta.2",
+        "vue": "^3.5.12",
+        "vue-image-upload": "^1.0.1",
+        "vue3-dropzone": "^2.2.1"
     }
 }

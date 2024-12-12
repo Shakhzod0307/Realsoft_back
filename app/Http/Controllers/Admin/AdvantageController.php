@@ -28,7 +28,7 @@ class AdvantageController extends Controller
             $data = $request->all();
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $imageName = time() . '_' . $file->getClientOriginalName();
+                $imageName = $file->getClientOriginalName();
                 $file->move(public_path('images'), $imageName);
                 $data['image'] = '/images/' . $imageName;
             }
@@ -50,7 +50,7 @@ class AdvantageController extends Controller
                 if ($advantage->image && file_exists(public_path($advantage->image))) {
                     unlink(public_path($advantage->image));
                 }
-                $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+                $imageName = $request->file('image')->getClientOriginalName();
                 $imagePath = $request->file('image')->move(public_path('images'), $imageName);
                 $advantage->image = '/images/' . $imageName;
             }

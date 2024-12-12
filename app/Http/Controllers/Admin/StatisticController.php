@@ -31,7 +31,7 @@ class StatisticController extends Controller
             $data = $request->all();
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $imageName = time() . '_' . $file->getClientOriginalName();
+                $imageName =$file->getClientOriginalName();
                 $file->move(public_path('images'), $imageName);
                 $data['image'] = '/images/' . $imageName;
             }
@@ -51,7 +51,7 @@ class StatisticController extends Controller
             $statistic->title = $request->input('title', $statistic->title);
             $statistic->number = $request->input('number', $statistic->number);
             if ($request->hasFile('image')) {
-                $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+                $imageName = $request->file('image')->getClientOriginalName();
                 $imagePath = $request->file('image')->move(public_path('images'), $imageName);
                 $statistic->image = '/images/' . $imageName;
             }

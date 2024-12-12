@@ -27,7 +27,7 @@ class PartnerController extends Controller
         try {
             $data = [];
             $file = $request->file('image');
-            $imageName = time() . '_' . $file->getClientOriginalName();
+            $imageName = $file->getClientOriginalName();
             $file->move(public_path('images'), $imageName);
             $data['image'] = '/images/' . $imageName;
             $partner = Partner::create($data);
@@ -44,7 +44,7 @@ class PartnerController extends Controller
                 return response()->json(['error' => 'Team Member not found'], 404);
             }
             if ($request->hasFile('image')) {
-                $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+                $imageName = $request->file('image')->getClientOriginalName();
                 $imagePath = $request->file('image')->move(public_path('images'), $imageName);
                 $partner->image = '/images/' . $imageName;
             }

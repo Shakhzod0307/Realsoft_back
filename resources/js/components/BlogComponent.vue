@@ -23,7 +23,7 @@
             <!-- Blog Cards -->
             <div class="blog-card">
                 <div v-for="(blog, index) in Blog" :key="blog.id" class="card">
-                    <img :src="blog.image" alt="Blog Image" class="card-image" />
+                    <img :src="getMainImage(blog.images)" alt="Main Blog Image" class="card-image" />
                     <div class="card-content">
                         <h3>{{ blog.title }}</h3>
                         <p>{{ blog.text }}</p>
@@ -47,13 +47,61 @@
             <div class="modal">
                 <h3>{{ modalTitle }}</h3>
                 <form @submit.prevent="submitForm">
+                    <input
+                        class="input"
+                        autocomplete="off"
+                        v-model="form.title"
+                        placeholder="Title..."
+                        required
+                    />
+                    <textarea
+                        rows="3"
+                        class="input"
+                        autocomplete="off"
+                        v-model="form.text"
+                        placeholder="Content..."
+                        required
+                    />
 
-                    <input class="input" autocomplete="off" v-model="form.title" placeholder="Title..." required />
-                    <textarea rows="3" class="input" autocomplete="off" v-model="form.text" placeholder="Content..." required />
-                    <div v-if="form.image && typeof form.image === 'string'" class="current-image">
-                        <img :src="form.image" alt="Current Image" />
+                    <input type="file" id="file" ref="file" class="input" multiple @change="handleFileChange" />
+
+                    <!-- Image Previews -->
+                    <div v-if="form.images.length > 0" class="image-previews">
+                        <div v-for="(image, index) in form.images" :key="index" class="image-preview">
+                            <div class="image-card">
+                                <div class="card-image-preview">
+                                    <img v-if="image.image_url"
+                                         :src="image.image_url"
+                                         alt="Preview Image"
+                                         class="preview-img"
+                                         @dragstart="dragStart(index)"
+                                         @dragover.prevent
+                                         @drop="drop(index)"
+                                         draggable="true"
+                                    />
+                                    <img v-if="image.url"
+                                         :src="image.url"
+                                         alt="Preview Image"
+                                         class="preview-img"
+                                         @dragstart="dragStart(index)"
+                                         @dragover.prevent
+                                         @drop="drop(index)"
+                                         draggable="true"
+                                    />
+                                </div>
+                                <div class="image-card-actions">
+                                    <button class="icon-1" @click="unsetMainImage(index)" v-if="image.index === 1">
+                                        <i class="fa fa-arrow-up"></i>
+                                    </button>
+                                    <button v-if="image.index === 0" @click="setMainImage(index)">
+                                        <i class="fa fa-arrow-up"></i>
+                                    </button>
+                                    <button @click="removeImage(index)"><i class="fa fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <input type="file" @change="handleFileChange" />
+
                     <div class="modal-buttons">
                         <button @click="closeModal" type="button">Cancel</button>
                         <button type="submit">Save</button>
@@ -65,7 +113,7 @@
 
     <!-- Delete Confirmation Modal -->
     <Teleport to="body">
-        <div v-if="showDeleteModal" class="modal-overlay">
+        <div v-if="showDeleteModal" class="modal-overlay-delete">
             <div class="modal">
                 <h3>Confirm Deletion</h3>
                 <p>Are you sure you want to delete this blog?</p>
@@ -78,97 +126,192 @@
     </Teleport>
 </template>
 
-
 <script setup>
-import {onMounted, ref, watch} from "vue";
-import axios from "axios";
+import { ref, reactive, onMounted, watch } from 'vue';
+import axios from 'axios';
 
-const Blog = ref([]);
 const searchQuery = ref('');
-const page = ref(1);
-const totalPages = ref(0);
+const Blog = ref([]);
 const showModal = ref(false);
 const showDeleteModal = ref(false);
-const modalTitle = ref('');
-const form = ref({ id: null, title: '', text: '',image:null});
-const blogIdToDelete = ref(null);
+const modalTitle = ref('Add Blog');
+const selectedBlogId = ref(null);
+const form = reactive({
+    id: null,
+    title: '',
+    text: '',
+    images: [],
+});
 
-const GetAllBlogs = async () => {
-    try {
-        const response = await axios.get('/api/get-blogs', {
-            params: { search: searchQuery.value, page: page.value },
-        });
-        Blog.value = response.data.data.data;
-        totalPages.value = response.data.data.last_page;
-    } catch (error) {
-        console.error("Failed to fetch blogs:", error);
+const handleFileChange = (event) => {
+    const files = event.target.files;
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        // console.log(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            form.images.push({
+                file: file,
+                image_url: e.target.result,
+                index: 0
+            });
+        };
+        // console.log(form.images);
+        reader.readAsDataURL(file);
     }
 };
-
 
 const openAddModal = () => {
-    modalTitle.value = 'Create New Blog';
-    form.value = { id: null, title: '', text: '' ,image:null};
     showModal.value = true;
+    modalTitle.value = 'Add Blog';
+    form.title = '';
+    form.text = '';
+    form.images = [];
 };
+
+const getMainImage = (images) => {
+    if (Array.isArray(images)) {
+        const mainImage = images.find(image => image.index === 1);
+        return mainImage ? mainImage.url : '';
+    }
+    return '';
+};
+
 
 const openEditModal = (blog) => {
-    modalTitle.value = 'Edit Blog';
-    form.value = { ...blog };
     showModal.value = true;
+    modalTitle.value = 'Edit Blog';
+    form.id = blog.id;
+    form.title = blog.title;
+    form.text = blog.text;
+    form.images = blog.images;
+    // console.log(form.images);
 };
 
-const closeModal = () => (showModal.value = false);
-const handleFileChange = (event) => {
-    form.value.image = event.target.files[0];
+const closeModal = () => {
+    showModal.value = false;
+    form.id = null;
+    form.title = '';
+    form.text = '';
+    form.images = [];
 };
 
-const submitForm = async () => {
-    try {
-        const formData = new FormData();
-        formData.append('title', form.value.title);
-        formData.append('text', form.value.text);
-        if (form.value.image && typeof form.value.image !== 'string') {
-            formData.append('image', form.value.image);
-        }
-
-        if (form.value.id) {
-            await axios.post(`/blog/${form.value.id}`, formData);
-        } else {
-            await axios.post('/blog', formData);
-        }
-
-        closeModal();
-        await GetAllBlogs();
-    } catch (error) {
-        console.error("Failed to save blog:", error);
-    }
-};
-
-const openDeleteModal = (id) => {
-    blogIdToDelete.value = id;
+const openDeleteModal = (blogId) => {
     showDeleteModal.value = true;
+    selectedBlogId.value = blogId;
 };
 
-const closeDeleteModal = () => (showDeleteModal.value = false);
+const closeDeleteModal = () => {
+    showDeleteModal.value = false;
+};
 
-const confirmDelete = async () => {
-    try {
-        await axios.delete(`/blog/${blogIdToDelete.value}`);
-        closeDeleteModal();
-        await GetAllBlogs();
-    } catch (error) {
-        console.error("Failed to delete blog:", error);
+const removeImage = (index) => {
+    form.images.splice(index, 1);
+};
+
+const setMainImage = (index) => {
+    form.images.forEach((image, i) => {
+        image.index = i === index ? 1 : 0;
+        // console.log(image.index);
+    });
+};
+const unsetMainImage = (index) => {
+    if (form.images[index]) {
+        form.images[index].index = 0;
     }
 };
 
-onMounted(() => GetAllBlogs());
+const submitForm = () => {
+    const formData = new FormData();
+    formData.append('title', form.title);
+    formData.append('text', form.text);
+    form.images.forEach((image, index) => {
+        if (image.file) {
+            formData.append(`images[${index}][file]`, image.file);
+        }
+        formData.append(`images[${index}][url]`, image.url);
+        formData.append(`images[${index}][index]`, image.index);
+
+    });
+    console.log(form.images);
+
+    if (form.id) {
+        // console.log(form.images);
+        axios
+            .post(`/blog/${form.id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            .then((response) => {
+                // console.log(response.data.data);
+                closeModal();
+                fetchBlogs();
+                form.id = null;
+                form.title = '';
+                form.text = '';
+                form.images = [];
+            })
+            .catch((error) => console.error(error));
+    } else {
+        axios
+            .post('/blog', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            .then((response) => {
+                // console.log(response);
+                closeModal();
+                fetchBlogs();
+                form.id = null;
+                form.title = '';
+                form.text = '';
+                form.images = [];
+            })
+            .catch((error) => console.error(error));
+    }
+};
+const dragStart = (index) => {
+    form.draggedIndex = index;
+};
+
+const drop = (index) => {
+    const draggedImage = form.images[form.draggedIndex];
+    form.images.splice(form.draggedIndex, 1);
+    form.images.splice(index, 0, draggedImage);
+    form.draggedIndex = null;
+};
+const fetchBlogs = () => {
+    axios
+        .get(`/api/get-blogs?search=${searchQuery.value}`)
+        .then((response) => {
+            Blog.value = response.data.data.data;
+        })
+        .catch((error) => console.error(error));
+};
+
+
+const confirmDelete = () => {
+    axios
+        .delete(`/blog/${selectedBlogId.value}`)
+        .then(() => {
+            closeDeleteModal();
+            fetchBlogs();
+        })
+        .catch((error) => console.error(error));
+};
+
+
+onMounted(() => {
+    fetchBlogs();
+});
 
 watch(searchQuery, () => {
-    page.value = 1;
-    GetAllBlogs();
+    fetchBlogs();
 });
 </script>
+
 
 <style scoped>
 
@@ -337,7 +480,9 @@ watch(searchQuery, () => {
     transform: translateY(-2px);
 }
 
-.modal-overlay {
+.modal-overlay,
+.modal-overlay-delete
+{
     position: fixed;
     top: 0;
     left: 0;
@@ -351,18 +496,111 @@ watch(searchQuery, () => {
     animation: fadeIn 0.3s forwards;
 }
 
-.modal {
+.modal-overlay .modal {
     background-color: #ffffff;
     padding: 30px;
     border-radius: 12px;
-    width: 400px;
-    max-width: 90%;
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     transform: scale(0.8);
     opacity: 0;
     animation: scaleUp 0.3s forwards;
     text-align: center;
 }
+.modal-overlay-delete .modal  {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 30%;
+    height: 30%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    opacity: 0;
+    animation: scaleUp 0.3s forwards;
+    text-align: center;
+}
+
+
+.image-preview {
+    display: inline-block;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    width: 250px;
+    height: 280px;
+    overflow: hidden;
+    ;
+}
+.image-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-img {
+    width: 250px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.image-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.image-card-actions button {
+    padding: 5px 10px;
+    background-color: #fff;
+    border: 1px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.image-card-actions button:hover {
+    scale: 1.05;
+}
+.image-card-actions .icon-1 {
+    color: #fff;
+    background: blue;
+    border-color: blue;
+}
+
+
+.image-previews {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+}
+
+/* File input styling */
+input[type="file"] {
+    background-color: #fff;
+    padding: 10px;
+    border: 2px dashed #ccc;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    margin-top: 10px;
+    width: 100%;
+}
+
+input[type="file"]:hover {
+    border-color: #4c9bef;
+}
+
+
 
 .modal h3 {
     font-size: 1.8rem;
@@ -480,4 +718,3 @@ watch(searchQuery, () => {
 
 
 </style>
-

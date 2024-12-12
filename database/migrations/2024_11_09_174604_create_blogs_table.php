@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('text');
-            $table->string('image');
+            $table->json('images');
+//            $table->integer('index')->default(0);
             $table->timestamps();
         });
     }

@@ -19,6 +19,12 @@ class BlogController extends Controller
             });
         })
             ->paginate(20);
-        return response()->json(['data'=>$blogs],200);
+        $blogs->getCollection()->transform(function ($blog) {
+            $blog->images = json_decode($blog->images, true);
+            return $blog;
+        });
+
+        return response()->json(['data' => $blogs], 200);
     }
+
 }

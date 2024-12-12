@@ -31,7 +31,7 @@ class TeamController extends Controller
             $data = [];
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $imageName = time() . '_' . $file->getClientOriginalName();
+                $imageName =$file->getClientOriginalName();
                 $file->move(public_path('images'), $imageName);
                 $data['image'] = '/images/' . $imageName;
             }
@@ -65,7 +65,7 @@ class TeamController extends Controller
                 if ($team->image && file_exists(public_path($team->image))) {
                     unlink(public_path($team->image));
                 }
-                $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+                $imageName = $request->file('image')->getClientOriginalName();
                 $imagePath = $request->file('image')->move(public_path('images'), $imageName);
                 $team->image = '/images/' . $imageName;
             }
