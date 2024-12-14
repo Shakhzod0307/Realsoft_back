@@ -21,16 +21,21 @@ class BlogsController extends Controller
     public function blogCreate(Request $request)
     {
         $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'text' => 'required',
-            'images.*' => 'required',
+            'title.en' => 'required|string|max:255',
+            'title.uz' => 'required|string|max:255',
+            'title.ru' => 'required|string|max:255',
+            'text.en' => 'required|string',
+            'text.uz' => 'required|string',
+            'text.ru' => 'required|string',
+            'images.*.file' => 'required',
+            'images.*.index' => 'required',
         ]);
         $files = [];
         if ($request->has('images')) {
             foreach ($request->input('images') as $key => $imageData) {
                 if ($request->hasFile("images.$key.file")) {
                     $file = $request->file("images.$key.file");
-                    $name = $file->getClientOriginalName();
+                    $name = time() . '_' .$file->getClientOriginalName();
                     $file->move(public_path('blogs'), $name);
                     $files[] = [
                         'url' => '/blogs/'.$name,
@@ -42,8 +47,8 @@ class BlogsController extends Controller
             }
         }
         $blog = Blog::create([
-            'title' => $data['title'],
-            'text' => $data['text'],
+            'title' => json_encode($data['title']),
+            'text' => json_encode($data['text']),
             'images' => json_encode($files),
         ]);
 
@@ -58,57 +63,53 @@ class BlogsController extends Controller
             if (!$blog) {
                 return response()->json(['error' => 'Blog not found'], 404);
             }
-            $data = $request->validate([
-                'title' => 'nullable|string|max:255',
-                'text' => 'nullable|string',
-                'images.*' => 'nullable',
+            $validator = Validator::make($request->all(), [
+                'title.en' => 'required|string|max:255',
+                'title.uz' => 'required|string|max:255',
+                'title.ru' => 'required|string|max:255',
+                'text.en' => 'required|string',
+                'text.uz' => 'required|string',
+                'text.ru' => 'required|string',
+                'images.*.file' => 'nullable|file|mimes:jpeg,png,jpg,svg',
+                'images.*.url' => 'nullable|string',
+                'images.*.index' => 'required|integer',
             ]);
-
-            $blog->title = $data['title'] ?? $blog->title;
-            $blog->text = $data['text'] ?? $blog->text;
-//            $existingFiles = json_decode($blog->images, true) ?? [];
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            $data = $validator->validated();
+            $blog->title = json_encode($data['title']);
+            $blog->text = json_encode($data['text']);
             $newFiles = [];
-            $updatedFiles = [];
-
             if ($request->has('images')) {
                 foreach ($request->input('images') as $key => $imageData) {
                     if ($request->hasFile("images.$key.file")) {
                         $file = $request->file("images.$key.file");
-                        $name = $file->getClientOriginalName();
+                        $name = time() . '_' . $file->getClientOriginalName();
                         $file->move(public_path('blogs'), $name);
                         $newFiles[] = [
                             'url' => '/blogs/' . $name,
-                            'index' => (int)$imageData['index'] ,
+                            'index' => (int) $imageData['index'],
                         ];
-                        Log::info((int)$imageData['index']);
-                    }
-
-                    // Handle existing images with 'url' and 'index'
-                    elseif (isset($imageData['url'], $imageData['index'])) {
-                        $newFiles[] = [
-                            'url' => $imageData['url'],
-                            'index' => (int)$imageData['index'],
-                        ];
-                    }
-                    else {
-                        Log::error("Invalid image data at key $key");
+                    } else {
+                        if (isset($imageData['url'])) {
+                            $newFiles[] = [
+                                'url' => $imageData['url'],
+                                'index' => (int) $imageData['index'],
+                            ];
+                        }
                     }
                 }
             }
-
-//            $allFiles = array_merge($existingFiles, $newFiles);
-
-//            usort($allFiles, fn($a, $b) => $b['index'] <=> $a['index']);
-
             $blog->images = json_encode($newFiles);
             $blog->save();
-
             return response()->json(['data' => $blog], 200);
-
         } catch (\Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
+            Log::error("Error updating blog: " . $exception->getMessage());
+            return response()->json(['error' => 'An error occurred while updating the blog.'], 500);
         }
     }
+
     public function blogDelete(string $id): JsonResponse
     {
         try {

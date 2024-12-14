@@ -24,8 +24,6 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         '09f6b20656683369174dd6fa83b7e5fb' => __DIR__ . '/..' . '/symfony/polyfill-uuid/bootstrap.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '47e1160838b5e5a10346ac4084b58c23' => __DIR__ . '/..' . '/laravel/prompts/src/helpers.php',
-        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '265b4faa2b3a9766332744949e83bf97' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Collections/helpers.php',
         'c7a3c339e7e14b60e06a2d7fcce9476b' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Events/functions.php',
@@ -34,6 +32,8 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         '7f7ac2ddea9cc3fb4b2cc201d63dbc10' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Log/functions.php',
         '493c6aea52f6009bab023b26c21a386a' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/functions.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
+        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+        '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'c72349b1fe8d0deeedd3a52e8aa814d8' => __DIR__ . '/..' . '/mockery/mockery/library/helpers.php',
         'ce9671a430e4846b44e1c68c7611f9f5' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
         'a1cfe24d14977df6878b9bf804af2d1c' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Phpunit/Autoload.php',
@@ -523,6 +523,16 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'M' => 
+        array (
+            'Mcamara\\LaravelLocalization' => 
+            array (
+                0 => __DIR__ . '/..' . '/mcamara/laravel-localization/src',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'App\\Actions\\ElaborateSummary' => __DIR__ . '/..' . '/laravel/pint/app/Actions/ElaborateSummary.php',
         'App\\Actions\\FixCode' => __DIR__ . '/..' . '/laravel/pint/app/Actions/FixCode.php',
@@ -542,8 +552,10 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         'App\\Http\\Controllers\\Admin\\ProjectController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/ProjectController.php',
         'App\\Http\\Controllers\\Admin\\SectorController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/SectorController.php',
         'App\\Http\\Controllers\\Admin\\ServicesController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/ServicesController.php',
+        'App\\Http\\Controllers\\Admin\\SocialMediaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/SocialMediaController.php',
         'App\\Http\\Controllers\\Admin\\StatisticController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/StatisticController.php',
         'App\\Http\\Controllers\\Admin\\TeamController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/TeamController.php',
+        'App\\Http\\Controllers\\Admin\\TextController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/TextController.php',
         'App\\Http\\Controllers\\Api\\AdvantageController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/AdvantageController.php',
         'App\\Http\\Controllers\\Api\\BlogController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/BlogController.php',
         'App\\Http\\Controllers\\Api\\ContactController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/ContactController.php',
@@ -553,6 +565,7 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         'App\\Http\\Controllers\\Api\\ProjectController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/ProjectController.php',
         'App\\Http\\Controllers\\Api\\SectorController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/SectorController.php',
         'App\\Http\\Controllers\\Api\\ServiceController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/ServiceController.php',
+        'App\\Http\\Controllers\\Api\\SocialMediaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/SocialMediaController.php',
         'App\\Http\\Controllers\\Api\\StatisticController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/StatisticController.php',
         'App\\Http\\Controllers\\Api\\TeamController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/TeamController.php',
         'App\\Http\\Controllers\\Api\\TextController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/TextController.php',
@@ -567,6 +580,7 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         'App\\Models\\Project' => __DIR__ . '/../..' . '/app/Models/Project.php',
         'App\\Models\\Sector' => __DIR__ . '/../..' . '/app/Models/Sector.php',
         'App\\Models\\Service' => __DIR__ . '/../..' . '/app/Models/Service.php',
+        'App\\Models\\SocialMedia' => __DIR__ . '/../..' . '/app/Models/SocialMedia.php',
         'App\\Models\\Statistic' => __DIR__ . '/../..' . '/app/Models/Statistic.php',
         'App\\Models\\Team' => __DIR__ . '/../..' . '/app/Models/Team.php',
         'App\\Models\\Text' => __DIR__ . '/../..' . '/app/Models/Text.php',
@@ -709,6 +723,7 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         'Database\\Seeders\\ProjectSeeder' => __DIR__ . '/../..' . '/database/seeders/ProjectSeeder.php',
         'Database\\Seeders\\SectorSeeder' => __DIR__ . '/../..' . '/database/seeders/SectorSeeder.php',
         'Database\\Seeders\\ServiceSeeder' => __DIR__ . '/../..' . '/database/seeders/ServiceSeeder.php',
+        'Database\\Seeders\\SocialMediaSeeder' => __DIR__ . '/../..' . '/database/seeders/SocialMediaSeeder.php',
         'Database\\Seeders\\StatisticSeeder' => __DIR__ . '/../..' . '/database/seeders/StatisticSeeder.php',
         'Database\\Seeders\\TeamSeeder' => __DIR__ . '/../..' . '/database/seeders/TeamSeeder.php',
         'Database\\Seeders\\TextSeeder' => __DIR__ . '/../..' . '/database/seeders/TextSeeder.php',
@@ -3553,6 +3568,24 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         'League\\MimeTypeDetection\\MimeTypeDetector' => __DIR__ . '/..' . '/league/mime-type-detection/src/MimeTypeDetector.php',
         'League\\MimeTypeDetection\\OverridingExtensionToMimeTypeMap' => __DIR__ . '/..' . '/league/mime-type-detection/src/OverridingExtensionToMimeTypeMap.php',
         'League\\MimeTypeDetection\\OverridingExtensionToMimeTypeMapTest' => __DIR__ . '/..' . '/league/mime-type-detection/src/OverridingExtensionToMimeTypeMapTest.php',
+        'Mcamara\\LaravelLocalization\\Commands\\RouteTranslationsCacheCommand' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Commands/RouteTranslationsCacheCommand.php',
+        'Mcamara\\LaravelLocalization\\Commands\\RouteTranslationsClearCommand' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Commands/RouteTranslationsClearCommand.php',
+        'Mcamara\\LaravelLocalization\\Commands\\RouteTranslationsListCommand' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Commands/RouteTranslationsListCommand.php',
+        'Mcamara\\LaravelLocalization\\Exceptions\\SupportedLocalesNotDefined' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Exceptions/SupportedLocalesNotDefined.php',
+        'Mcamara\\LaravelLocalization\\Exceptions\\UnsupportedLocaleException' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Exceptions/UnsupportedLocaleException.php',
+        'Mcamara\\LaravelLocalization\\Facades\\LaravelLocalization' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Facades/LaravelLocalization.php',
+        'Mcamara\\LaravelLocalization\\Interfaces\\LocalizedUrlRoutable' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Interfaces/LocalizedUrlRoutable.php',
+        'Mcamara\\LaravelLocalization\\LanguageNegotiator' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/LanguageNegotiator.php',
+        'Mcamara\\LaravelLocalization\\LaravelLocalization' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/LaravelLocalization.php',
+        'Mcamara\\LaravelLocalization\\LaravelLocalizationServiceProvider' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/LaravelLocalizationServiceProvider.php',
+        'Mcamara\\LaravelLocalization\\Middleware\\LaravelLocalizationMiddlewareBase' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Middleware/LaravelLocalizationMiddlewareBase.php',
+        'Mcamara\\LaravelLocalization\\Middleware\\LaravelLocalizationRedirectFilter' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Middleware/LaravelLocalizationRedirectFilter.php',
+        'Mcamara\\LaravelLocalization\\Middleware\\LaravelLocalizationRoutes' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Middleware/LaravelLocalizationRoutes.php',
+        'Mcamara\\LaravelLocalization\\Middleware\\LaravelLocalizationViewPath' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Middleware/LaravelLocalizationViewPath.php',
+        'Mcamara\\LaravelLocalization\\Middleware\\LocaleCookieRedirect' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Middleware/LocaleCookieRedirect.php',
+        'Mcamara\\LaravelLocalization\\Middleware\\LocaleSessionRedirect' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Middleware/LocaleSessionRedirect.php',
+        'Mcamara\\LaravelLocalization\\Traits\\LoadsTranslatedCachedRoutes' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Traits/LoadsTranslatedCachedRoutes.php',
+        'Mcamara\\LaravelLocalization\\Traits\\TranslatedRouteCommandContext' => __DIR__ . '/..' . '/mcamara/laravel-localization/src/Mcamara/LaravelLocalization/Traits/TranslatedRouteCommandContext.php',
         'Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegration' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryPHPUnitIntegration.php',
         'Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegrationAssertPostConditions' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryPHPUnitIntegrationAssertPostConditions.php',
         'Mockery\\Adapter\\Phpunit\\MockeryTestCase' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryTestCase.php',
@@ -6907,6 +6940,7 @@ class ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitb4efe218dcb3b3c8851afdd6b7b4763c::$classMap;
 
         }, null, ClassLoader::class);

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/get-services',[ServiceController::class,'services']);
 Route::get('/get-blogs',[BlogController::class,'blogs']);
+Route::get('/{id}/blog',[BlogController::class,'showBlog']);
 Route::get('/get-sectors',[SectorController::class,'sectors']);
 Route::get('/get-advantages',[AdvantageController::class,'advantages']);
 Route::get('/get-forms',[FormController::class,'forms']);

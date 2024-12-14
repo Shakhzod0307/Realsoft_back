@@ -1,20 +1,28 @@
 <template>
     <div class="app-container">
         <div class="container">
-            <div class="header">
-                <h2>Blogs Dashboard</h2>
-                <button @click="openAddModal" class="create-service">
-                    <i class="fa fa-plus"></i> Add Blog
-                </button>
-            </div>
 
+            <div class="header">
+                <h2>{{ $t('dashboard.title') }}</h2>
+                <div class="select_language">
+                    <select v-model="currentLanguage" @change="changeLanguage">
+                        <option value="en">English</option>
+                        <option value="ru">Русский</option>
+                        <option value="uz">O'zbekcha</option>
+                    </select>
+                </div>
+
+            </div>
+            <button @click="openAddModal" class="create-service">
+                <i class="fa fa-plus"></i> {{ $t('dashboard.addBlog') }}
+            </button>
             <!-- Search Form -->
             <form @submit.prevent="fetchBlogs" class="search-form">
                 <div class="search-input-wrapper">
                     <input
                         type="search"
                         v-model="searchQuery"
-                        placeholder="Search blogs..."
+                        :placeholder="$t('dashboard.searchPlaceholder')"
                         required
                     />
                 </div>
@@ -26,10 +34,10 @@
                     <img :src="getMainImage(blog.images)" alt="Main Blog Image" class="card-image" />
                     <div class="card-content">
                         <h3>{{ blog.title }}</h3>
-                        <p>{{ blog.text }}</p>
+                        <p>{{ blog.text}}</p>
                     </div>
                     <div class="card-buttons">
-                        <button @click="openEditModal(blog)" class="edit-button">
+                        <button @click="openEditModal(blog.id)" class="edit-button">
                             <i class="fa fa-edit"></i>
                         </button>
                         <button @click="openDeleteModal(blog.id)" class="delete-button">
@@ -41,29 +49,40 @@
         </div>
     </div>
 
-    <!-- Add/Edit Modal -->
+    <!-- Add Modal -->
     <Teleport to="body">
         <div v-if="showModal" class="modal-overlay">
             <div class="modal">
                 <h3>{{ modalTitle }}</h3>
+                <div class="lang_buttons">
+                    <button
+                        v-for="lang in Object.keys(form.title)"
+                        :key="lang"
+                        :class="{ active: formLanguage === lang }"
+                        @click="formLanguage = lang">
+                        {{ lang.toUpperCase() }}
+                    </button>
+                </div>
                 <form @submit.prevent="submitForm">
-                    <input
-                        class="input"
-                        autocomplete="off"
-                        v-model="form.title"
-                        placeholder="Title..."
-                        required
-                    />
-                    <textarea
-                        rows="3"
-                        class="input"
-                        autocomplete="off"
-                        v-model="form.text"
-                        placeholder="Content..."
-                        required
-                    />
+                    <div>
+                        <input
+                            class="input"
+                            autocomplete="off"
+                            v-model="form.title[formLanguage]"
+                            :placeholder="$t('modal.titlePlaceholder')"
+                            required
+                        />
+                        <textarea
+                            rows="3"
+                            class="input"
+                            autocomplete="off"
+                            v-model="form.text[formLanguage]"
+                            :placeholder="$t('modal.contentPlaceholder')"
+                            required
+                        />
 
-                    <input type="file" id="file" ref="file" class="input" multiple @change="handleFileChange" />
+                    </div>
+                    <input type="file" id="file" ref="file" class="input" multiple @change="handleFileChange($event, 1)" />
 
                     <!-- Image Previews -->
                     <div v-if="form.images.length > 0" class="image-previews">
@@ -74,37 +93,117 @@
                                          :src="image.image_url"
                                          alt="Preview Image"
                                          class="preview-img"
-                                         @dragstart="dragStart(index)"
+                                         @dragstart="dragStart(index,1)"
                                          @dragover.prevent
-                                         @drop="drop(index)"
+                                         @drop="drop(index,1)"
                                          draggable="true"
                                     />
                                     <img v-if="image.url"
                                          :src="image.url"
                                          alt="Preview Image"
                                          class="preview-img"
-                                         @dragstart="dragStart(index)"
+                                         @dragstart="dragStart(index,1)"
                                          @dragover.prevent
-                                         @drop="drop(index)"
+                                         @drop="drop(index,1)"
                                          draggable="true"
                                     />
                                 </div>
                                 <div class="image-card-actions">
-                                    <button class="icon-1" @click="unsetMainImage(index)" v-if="image.index === 1">
+                                    <button class="icon-1" @click="unsetMainImage(index,1)" v-if="image.index === 1">
                                         <i class="fa fa-arrow-up"></i>
                                     </button>
-                                    <button v-if="image.index === 0" @click="setMainImage(index)">
+                                    <button v-if="image.index === 0" @click="setMainImage(index,1)">
                                         <i class="fa fa-arrow-up"></i>
                                     </button>
-                                    <button @click="removeImage(index)"><i class="fa fa-trash"></i></button>
+                                    <button @click="removeImage(index,1)"><i class="fa fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="modal-buttons">
-                        <button @click="closeModal" type="button">Cancel</button>
-                        <button type="submit">Save</button>
+                        <button @click="closeModal" type="button">{{ $t('dashboard.cancel') }}</button>
+                        <button type="submit">{{ $t('dashboard.save') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </Teleport>
+<!--    Edit Modal-->
+    <Teleport to="body">
+        <div v-if="showEditModal" class="modal-overlay">
+            <div class="modal">
+                <h3>{{ modalTitle }}</h3>
+                <div class="lang_buttons">
+                    <button
+                        v-for="lang in Object.keys(editBlog.title)"
+                        :key="lang"
+                        :class="{ active: formLanguage === lang }"
+                        @click="formLanguage = lang">
+                        {{ lang.toUpperCase() }}
+                    </button>
+                </div>
+                <form @submit.prevent="submitEditForm">
+                    <div>
+                        <input
+                            class="input"
+                            autocomplete="off"
+                            v-model="editBlog.title[formLanguage]"
+                            :placeholder="$t('modal.titlePlaceholder')"
+                            required
+                        />
+                        <textarea
+                            rows="3"
+                            class="input"
+                            autocomplete="off"
+                            v-model="editBlog.text[formLanguage]"
+                            :placeholder="$t('modal.contentPlaceholder')"
+                            required
+                        />
+
+                    </div>
+                    <input type="file" id="file" ref="file" class="input" multiple @change="handleFileChange($event, 2)" />
+
+                    <!-- Image Previews -->
+                    <div v-if="editBlog.images.length > 0" class="image-previews">
+                        <div v-for="(image, index) in editBlog.images" :key="index" class="image-preview">
+                            <div class="image-card">
+                                <div class="card-image-preview">
+                                    <img v-if="image.image_url"
+                                         :src="image.image_url"
+                                         alt="Preview Image"
+                                         class="preview-img"
+                                         @dragstart="dragStart(index,2)"
+                                         @dragover.prevent
+                                         @drop="drop(index,2)"
+                                         draggable="true"
+                                    />
+                                    <img v-if="image.url"
+                                         :src="image.url"
+                                         alt="Preview Image"
+                                         class="preview-img"
+                                         @dragstart="dragStart(index,2)"
+                                         @dragover.prevent
+                                         @drop="drop(index,2)"
+                                         draggable="true"
+                                    />
+                                </div>
+                                <div class="image-card-actions">
+                                    <button class="icon-1" @click="unsetMainImage(index,2)" v-if="image.index === 1">
+                                        <i class="fa fa-arrow-up"></i>
+                                    </button>
+                                    <button v-if="image.index === 0" @click="setMainImage(index,2)">
+                                        <i class="fa fa-arrow-up"></i>
+                                    </button>
+                                    <button @click="removeImage(index,2)"><i class="fa fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button @click="closeEditModal" type="button">{{ $t('dashboard.cancel') }}</button>
+                        <button type="submit">{{ $t('dashboard.save') }}</button>
                     </div>
                 </form>
             </div>
@@ -115,11 +214,11 @@
     <Teleport to="body">
         <div v-if="showDeleteModal" class="modal-overlay-delete">
             <div class="modal">
-                <h3>Confirm Deletion</h3>
-                <p>Are you sure you want to delete this blog?</p>
+                <h3>{{ $t('dashboard.confirmDeleteTitle') }}</h3>
+                <p>{{ $t('dashboard.confirmDelete') }}</p>
                 <div class="modal-buttons">
-                    <button @click="closeDeleteModal">Cancel</button>
-                    <button @click="confirmDelete">Delete</button>
+                    <button @click="closeDeleteModal">{{ $t('dashboard.cancel') }}</button>
+                    <button @click="confirmDelete">{{ $t('dashboard.delete') }}</button>
                 </div>
             </div>
         </div>
@@ -129,32 +228,73 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
 import axios from 'axios';
+import { useI18n } from 'vue-i18n';
 
+defineProps({
+    locale: {
+        type: String,
+        required: true
+    },
+    urls: {
+        type: Object,
+        required: true
+    }
+});
+
+const { t,locale } = useI18n();
+const currentLanguage = ref('en');
+const formLanguage = ref('en');
 const searchQuery = ref('');
 const Blog = ref([]);
 const showModal = ref(false);
+const showEditModal = ref(false);
 const showDeleteModal = ref(false);
-const modalTitle = ref('Add Blog');
+const modalTitle = ref(t('modal.addBlogTitle'));
 const selectedBlogId = ref(null);
+const filteredBlogs = ref([]);
 const form = reactive({
     id: null,
-    title: '',
-    text: '',
+    title: {en:'',ru:'',uz:''},
+    text: {en:'',ru:'',uz:''},
+    images: [],
+});
+const editBlog = reactive({
+    id: null,
+    title: {},
+    text: {},
     images: [],
 });
 
-const handleFileChange = (event) => {
+const changeLanguage = () => {
+    locale.value = currentLanguage.value;
+    const currentUrl = window.location.pathname;
+    const localizedUrl = `/${currentLanguage.value}${currentUrl.replace(/^\/(en|ru|uz)/, '')}`;
+    history.pushState(null, '', localizedUrl);
+};
+const handleFileChange = (event,number) => {
     const files = event.target.files;
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         // console.log(file);
         const reader = new FileReader();
         reader.onload = (e) => {
-            form.images.push({
-                file: file,
-                image_url: e.target.result,
-                index: 0
-            });
+            if(number === 1){
+                form.images.push({
+                    file: file,
+                    image_url: e.target.result,
+                    index: 0
+                });
+                // console.log(form.images)
+            }
+            if(number === 2){
+                editBlog.images.push({
+                    file: file,
+                    image_url: e.target.result,
+                    index: 0
+                });
+                // console.log(editBlog.images)
+            }
+
         };
         // console.log(form.images);
         reader.readAsDataURL(file);
@@ -163,10 +303,11 @@ const handleFileChange = (event) => {
 
 const openAddModal = () => {
     showModal.value = true;
-    modalTitle.value = 'Add Blog';
-    form.title = '';
-    form.text = '';
+    modalTitle.value = t('modal.addBlogTitle');
+    form.title = {en:'',ru:'',uz:''};
+    form.text  = {en:'',ru:'',uz:''};
     form.images = [];
+    formLanguage.value = currentLanguage.value;
 };
 
 const getMainImage = (images) => {
@@ -177,23 +318,35 @@ const getMainImage = (images) => {
     return '';
 };
 
-
-const openEditModal = (blog) => {
-    showModal.value = true;
-    modalTitle.value = 'Edit Blog';
-    form.id = blog.id;
-    form.title = blog.title;
-    form.text = blog.text;
-    form.images = blog.images;
-    // console.log(form.images);
+const openEditModal = async (id) => {
+    try {
+        showEditModal.value = true;
+        modalTitle.value = t('modal.editBlogTitle');
+        const response = await axios.get(`/api/${id}/blog`);
+        editBlog.id = response.data.data.id;
+        editBlog.title = response.data.data.title;
+        editBlog.text = response.data.data.text;
+        editBlog.images = response.data.data.images;
+        // console.log(editBlog.images)
+        formLanguage.value = currentLanguage.value;
+    } catch (error) {
+        console.error('Error fetching blog details:', error);
+    }
 };
 
 const closeModal = () => {
     showModal.value = false;
     form.id = null;
-    form.title = '';
-    form.text = '';
+    form.title = {en:'',ru:'',uz:''};
+    form.text  = {en:'',ru:'',uz:''};
     form.images = [];
+};
+const closeEditModal = () => {
+    showEditModal.value = false;
+    editBlog.id  = null
+    editBlog.title  = {}
+    editBlog.text  = {}
+    editBlog.images  = [];
 };
 
 const openDeleteModal = (blogId) => {
@@ -205,93 +358,152 @@ const closeDeleteModal = () => {
     showDeleteModal.value = false;
 };
 
-const removeImage = (index) => {
-    form.images.splice(index, 1);
+const removeImage = (index,number) => {
+    if(number === 1){
+        form.images.splice(index, 1);
+    }
+    if(number === 2){
+        editBlog.images.splice(index, 1);
+    }
 };
+const setMainImage = (index,number) => {
+    if(number === 1){
+        form.images.forEach((image, i) => {
+            image.index = i === index ? 1 : 0;
+            // console.log(image.index);
+        });
+    }
+    if(number === 2){
+        editBlog.images.forEach((image, i) => {
+            image.index = i === index ? 1 : 0;
+            // console.log(image.index);
+        });
+    }
 
-const setMainImage = (index) => {
-    form.images.forEach((image, i) => {
-        image.index = i === index ? 1 : 0;
-        // console.log(image.index);
-    });
 };
-const unsetMainImage = (index) => {
-    if (form.images[index]) {
-        form.images[index].index = 0;
+const unsetMainImage = (index,number) => {
+    if(number === 1){
+        if (form.images[index]) {
+            form.images[index].index = 0;
+        }
+    }
+    if(number === 2){
+        if (editBlog.images[index]) {
+            editBlog.images[index].index = 0;
+        }
     }
 };
 
 const submitForm = () => {
     const formData = new FormData();
-    formData.append('title', form.title);
-    formData.append('text', form.text);
+    Object.keys(form.title).forEach((lang) => {
+        formData.append(`title[${lang}]`, form.title[lang]);
+        formData.append(`text[${lang}]`, form.text[lang]);
+    });
     form.images.forEach((image, index) => {
         if (image.file) {
             formData.append(`images[${index}][file]`, image.file);
         }
         formData.append(`images[${index}][url]`, image.url);
         formData.append(`images[${index}][index]`, image.index);
-
     });
-    console.log(form.images);
+    const method = 'post';
+    const url = form.id ? `/blog/${form.id}` : '/blog';
+    axios({
+        method,
+        url,
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+        .then((response) => {
+            closeModal();
+            fetchBlogs();
+            resetForm();
+        })
+        .catch((error) => {
+            console.error('Error submitting form:', error);
+        });
+};
+const submitEditForm = () => {
+    const formData = new FormData();
+    Object.keys(editBlog.title).forEach((lang) => {
+        formData.append(`title[${lang}]`, editBlog.title[lang]);
+        formData.append(`text[${lang}]`, editBlog.text[lang]);
+    });
+    editBlog.images.forEach((image, index) => {
+        if (image.file) {
+            formData.append(`images[${index}][file]`, image.file);
+        }
+        formData.append(`images[${index}][url]`, image.url);
+        formData.append(`images[${index}][index]`, image.index);
+    });
+    const method = 'post';
+    const url = editBlog.id ? `/blog/${editBlog.id}` : '/blog';
+    axios({
+        method,
+        url,
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+        .then((response) => {
+            closeEditModal();
+            fetchBlogs();
+        })
+        .catch((error) => {
+            console.error('Error submitting form:', error);
+        });
+};
 
-    if (form.id) {
-        // console.log(form.images);
-        axios
-            .post(`/blog/${form.id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            .then((response) => {
-                // console.log(response.data.data);
-                closeModal();
-                fetchBlogs();
-                form.id = null;
-                form.title = '';
-                form.text = '';
-                form.images = [];
-            })
-            .catch((error) => console.error(error));
-    } else {
-        axios
-            .post('/blog', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            .then((response) => {
-                // console.log(response);
-                closeModal();
-                fetchBlogs();
-                form.id = null;
-                form.title = '';
-                form.text = '';
-                form.images = [];
-            })
-            .catch((error) => console.error(error));
+const resetForm = () => {
+    form.id = null;
+    form.title = { en: '', ru: '', uz: '' };
+    form.text = { en: '', ru: '', uz: '' };
+    form.images = [];
+};
+
+const dragStart = (index,number) => {
+    if(number===1){
+        form.draggedIndex = index;
+    }
+    if(number===2){
+        editBlog.draggedIndex = index;
     }
 };
-const dragStart = (index) => {
-    form.draggedIndex = index;
-};
-
-const drop = (index) => {
-    const draggedImage = form.images[form.draggedIndex];
-    form.images.splice(form.draggedIndex, 1);
-    form.images.splice(index, 0, draggedImage);
-    form.draggedIndex = null;
+const drop = (index,number) => {
+    if(number===1){
+        const draggedImage = form.images[form.draggedIndex];
+        form.images.splice(form.draggedIndex, 1);
+        form.images.splice(index, 0, draggedImage);
+        form.draggedIndex = null;
+    }
+    if(number===2){
+        const draggedImage = editBlog.images[editBlog.draggedIndex];
+        editBlog.images.splice(editBlog.draggedIndex, 1);
+        editBlog.images.splice(index, 0, draggedImage);
+        editBlog.draggedIndex = null;
+    }
 };
 const fetchBlogs = () => {
     axios
-        .get(`/api/get-blogs?search=${searchQuery.value}`)
+        .get(`/api/get-blogs?lang=${currentLanguage.value}&search=${searchQuery.value}`)
         .then((response) => {
             Blog.value = response.data.data.data;
+            updateFilteredBlogs();
         })
         .catch((error) => console.error(error));
 };
-
-
+const updateFilteredBlogs = () => {
+    filteredBlogs.value = Blog.value.map((blog) => ({
+        id: blog.id,
+        title: blog.title[currentLanguage.value] || '',
+        text: blog.text[currentLanguage.value] || '',
+        images: blog.images,
+    }));
+};
 const confirmDelete = () => {
     axios
         .delete(`/blog/${selectedBlogId.value}`)
@@ -301,17 +513,17 @@ const confirmDelete = () => {
         })
         .catch((error) => console.error(error));
 };
-
-
 onMounted(() => {
     fetchBlogs();
 });
-
-watch(searchQuery, () => {
-    fetchBlogs();
+watch(searchQuery, () => {fetchBlogs();});
+watch(currentLanguage, fetchBlogs);
+watch(currentLanguage, () => {
+    if (!showModal.value) {
+        formLanguage.value = currentLanguage.value;
+    }
 });
 </script>
-
 
 <style scoped>
 
@@ -329,7 +541,7 @@ watch(searchQuery, () => {
 
 .input:focus {
     background-color: white;
-    transform: scale(1.05);
+    transform: scale(1.03);
     box-shadow: 13px 13px 100px #969696,
     -13px -13px 100px #ffffff;
 }
@@ -386,6 +598,26 @@ watch(searchQuery, () => {
 .create-service:hover {
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 5px 15px rgba(0, 120, 212, 0.3);
+}
+
+
+.select_language {
+    margin-right: 20px;
+}
+
+.select_language select {
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.select_language select:focus {
+    border-color: #007bff;
+    background-color: #e6f0ff;
+    outline: none;
 }
 
 /* Search Form */
@@ -478,6 +710,19 @@ watch(searchQuery, () => {
 .delete-button:hover {
     background-color: #c9302c;
     transform: translateY(-2px);
+}
+.lang_buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    padding: 15px;
+    background-color: #fff;
+    font-size: 24px;
+}
+.lang_buttons button:focus{
+    color: #2856ef;
 }
 
 .modal-overlay,
@@ -637,7 +882,7 @@ input[type="file"]:hover {
     font-weight: 500;
 }
 
-/* File Upload Button Style */
+
 .modal form input[type="file"] {
     background-color: #fff;
     padding: 10px;
@@ -696,7 +941,7 @@ input[type="file"]:hover {
     background-color: #0056b3;
 }
 
-/* Keyframes for Modal Animations */
+
 @keyframes fadeIn {
     from {
         opacity: 0;
