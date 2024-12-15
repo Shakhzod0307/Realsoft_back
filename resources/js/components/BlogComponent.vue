@@ -235,7 +235,7 @@ defineProps({
         type: String,
         required: true
     },
-    urls: {
+        urls: {
         type: Object,
         required: true
     }
